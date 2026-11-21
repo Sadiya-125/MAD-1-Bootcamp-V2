@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · CourseHub{% endblock %}
+{% block content %}
+  <h1>{{ title }}</h1>
+  <p>Hi {{ g.user.username }}, you're logged in as <strong>{{ g.user.role }}</strong>.</p>
+
+  {% if g.user.role == 'student' %}
+    <p>Your enrolled courses will show up here (Day 4).</p>
+  {% elif g.user.role == 'instructor' %}
+    <p>Your courses and the course builder will show up here (Day 5).</p>
+  {% elif g.user.role == 'admin' %}
+    <h2>All users</h2>
+    <table>
+      <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Active</th></tr>
+      {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td>
+          <td>{{ u.role }}</td><td>{{ 'Yes' if u.is_active else 'No' }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}
