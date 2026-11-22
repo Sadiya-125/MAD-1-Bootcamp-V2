@@ -1,23 +1,59 @@
 {% extends "base.html" %}
-{% block title %}{{ title }} · CourseHub{% endblock %}
-{% block content %}
-  <h1>{{ title }}</h1>
-  <p>Hi {{ g.user.username }}, you're logged in as <strong>{{ g.user.role }}</strong>.</p>
+{% block title %}Dashboard{% endblock %}
 
-  {% if g.user.role == 'student' %}
-    <p>Your enrolled courses will show up here (Day 4).</p>
-  {% elif g.user.role == 'instructor' %}
-    <p>Your courses and the course builder will show up here (Day 5).</p>
-  {% elif g.user.role == 'admin' %}
-    <h2>All users</h2>
-    <table>
-      <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Active</th></tr>
-      {% for u in users %}
-        <tr>
-          <td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td>
-          <td>{{ u.role }}</td><td>{{ 'Yes' if u.is_active else 'No' }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
+{% block content %}
+<div class="page-header">
+  <h1>Hi, {{ current_user.username }}</h1>
+  <p class="muted">You're signed in as {{ 'an' if current_user.is_instructor or current_user.is_admin else 'a' }} {{ current_user.role }}.</p>
+</div>
+
+{% if current_user.is_student %}
+  <div class="card-grid">
+    <article class="card">
+      <h2>My Courses</h2>
+      <p class="stat">{{ stats.enrolled }}</p>
+      <p class="muted">courses enrolled, {{ stats.completed }} completed</p>
+      <a class="btn btn-secondary" href="{{ url_for('student_area') }}">Go to my learning</a>
+    </article>
+    <article class="card card-placeholder">
+      <h2>Browse Courses</h2>
+      <p class="muted">The course catalog arrives on Day 3.</p>
+    </article>
+  </div>
+
+{% elif current_user.is_instructor %}
+  <div class="card-grid">
+    <article class="card">
+      <h2>Teaching</h2>
+      <p class="stat">{{ stats.courses }}</p>
+      <p class="muted">courses, {{ stats.published }} published</p>
+      <a class="btn btn-secondary" href="{{ url_for('instructor_area') }}">Go to teaching</a>
+    </article>
+    <article class="card">
+      <h2>Students</h2>
+      <p class="stat">{{ stats.students }}</p>
+      <p class="muted">total enrollments across your courses</p>
+    </article>
+  </div>
+
+{% elif current_user.is_admin %}
+  <div class="card-grid">
+    <article class="card">
+      <h2>Users</h2>
+      <p class="stat">{{ stats.users }}</p>
+      <p class="muted">registered accounts</p>
+    </article>
+    <article class="card">
+      <h2>Courses</h2>
+      <p class="stat">{{ stats.courses }}</p>
+      <p class="muted">on the platform</p>
+    </article>
+    <article class="card">
+      <h2>Enrollments</h2>
+      <p class="stat">{{ stats.enrollments }}</p>
+      <p class="muted">across all courses</p>
+    </article>
+  </div>
+  <p><a class="btn btn-secondary" href="{{ url_for('admin_area') }}">Go to admin</a></p>
+{% endif %}
 {% endblock %}

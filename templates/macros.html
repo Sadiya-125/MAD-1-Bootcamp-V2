@@ -1,0 +1,14 @@
+{% macro pagination(page) %}
+  {% if page.pages > 1 %}
+    {% set args = request.args.to_dict() %}
+    <nav class="pagination" aria-label="Pages">
+      {% if page.has_prev %}
+        <a class="btn btn-secondary" href="{{ url_for(request.endpoint, **dict(args, page=page.prev_num)) }}">Previous</a>
+      {% endif %}
+      <span class="muted">Page {{ page.page }} of {{ page.pages }}</span>
+      {% if page.has_next %}
+        <a class="btn btn-secondary" href="{{ url_for(request.endpoint, **dict(args, page=page.next_num)) }}">Next</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}

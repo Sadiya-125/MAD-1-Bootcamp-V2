@@ -15,24 +15,25 @@ When the project is finished, it will have:
 
 ## Tech stack
 
-| Part             | Tool                                             |
-| ---------------- | ------------------------------------------------ |
-| Language         | Python 3.8 or newer                              |
-| Web framework    | Flask 3                                          |
-| Database         | SQLite through Flask-SQLAlchemy (SQLAlchemy 2.x) |
-| Templates        | Jinja2                                           |
-| Password hashing | Werkzeug                                         |
-| Config           | python-dotenv                                    |
+| Part | Tool |
+|------|------|
+| Language | Python 3.8 or newer |
+| Web framework | Flask 3 |
+| Database | SQLite through Flask-SQLAlchemy (SQLAlchemy 2.x) |
+| Templates | Jinja2 |
+| Password hashing | Werkzeug |
+| Config | python-dotenv |
+| Form security | Flask-WTF (CSRF protection) |
 
 ## Data model
 
-| Model            | What it stores                                                    | Relationships                                              |
-| ---------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
-| User             | Students, instructors and admins (`role` column)                  | Teaches many courses; has many enrollments and completions |
-| Course           | Title, slug, description, price, category, level, published state | Belongs to one instructor; has many lessons                |
-| Lesson           | Title, content, video URL, duration, order                        | Belongs to one course                                      |
-| Enrollment       | Which student joined which course, and when                       | Links User and Course (many-to-many); computes `progress`  |
-| LessonCompletion | Which student finished which lesson                               | Links User and Lesson                                      |
+| Model | What it stores | Relationships |
+|-------|----------------|---------------|
+| User | Students, instructors and admins (`role` column) | Teaches many courses; has many enrollments and completions |
+| Course | Title, slug, description, price, category, level, published state | Belongs to one instructor; has many lessons |
+| Lesson | Title, content, video URL, duration, order | Belongs to one course |
+| Enrollment | Which student joined which course, and when | Links User and Course (many-to-many); computes `progress` |
+| LessonCompletion | Which student finished which lesson | Links User and Lesson |
 
 A student can enroll in a course only once and complete a lesson only once. The database enforces both rules with unique constraints.
 
@@ -48,9 +49,46 @@ coursehub/
 ├── .env                # Your local secrets (optional, not committed)
 ├── instance/
 │   └── coursehub.db    # SQLite database (created automatically)
-├── templates/          # Jinja2 HTML templates
-└── static/             # CSS and JavaScript
+├── templates/
+│   ├── base.html           # Layout: navbar, flash messages, footer
+│   ├── macros.html         # Reusable pagination macro
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html      # Different cards for student, instructor, admin
+│   ├── role_check.html     # Placeholder pages that prove the role checks work
+│   ├── course_list.html    # Catalog with search, filters and pagination
+│   ├── course_detail.html  # Course page with curriculum
+│   └── 403.html            # Access denied page
+└── static/
+    └── style.css
 ```
+
+## Authentication (Day 2)
+
+| Method | Path | Access | What it does |
+|--------|------|--------|--------------|
+| GET/POST | `/register` | Public | Sign up as a student or instructor |
+| GET/POST | `/login` | Public | Log in with username or email |
+| POST | `/logout` | Logged in | Log out |
+| GET | `/dashboard` | Logged in | Dashboard for the user's role |
+| GET | `/courses` | Public | Catalog with `q`, `category`, `level`, `price` and `page` |
+| GET | `/courses/<slug>` | Public | Course page (drafts only for their instructor and admins) |
+| GET | `/search` | Public | Redirects to the catalog with the same search |
+| GET | `/student/area` | Student | Placeholder, replaced on Day 4 |
+| GET | `/instructor/area` | Instructor | Placeholder, replaced on Day 5 |
+| GET | `/admin/area` | Admin | Placeholder, replaced on Day 6 |
+
+How it works:
+
+- Passwords are hashed with Werkzeug's `generate_password_hash`, never stored as plain text.
+- After login, the user's id is kept in Flask's signed session cookie. Every request loads the user into `g.user`, and templates see it as `current_user`.
+- `@login_required` sends visitors to the login page and brings them back to the page they wanted afterwards. Only links inside this site are followed, so the `next` parameter can't be used to redirect people to another site.
+- `@student_required`, `@instructor_required` and `@admin_required` show a 403 page to anyone with the wrong role. Each role is checked strictly, so an admin can't open the student area.
+- Nobody can pick "admin" on the sign-up form. Admins are created with `flask create-admin`.
+- Logout uses POST rather than GET, so a link on another site can't log people out.
+- Deactivated accounts (`is_active = False`) can't log in and are logged out on their next request.
+
+Every POST form has a hidden CSRF token (Flask-WTF), so other websites can't submit forms on a user's behalf.
 
 ## Setup
 
@@ -131,11 +169,12 @@ It asks for a username, email and password.
 
 ## Useful commands
 
-| Command              | What it does                                         |
-| -------------------- | ---------------------------------------------------- |
-| `flask run --debug`  | Start the dev server with auto-reload                |
-| `flask shell`        | Python shell with `db` and all models already loaded |
-| `flask create-admin` | Create an admin user                                 |
+| Command | What it does |
+|---------|--------------|
+| `flask run --debug` | Start the dev server with auto-reload |
+| `flask shell` | Python shell with `db` and all models already loaded |
+| `flask create-admin` | Create an admin user |
+| `flask seed` | Add demo users (password `password123`) and courses |
 
 To start over with an empty database, stop the server and delete `instance/coursehub.db`. It's recreated on the next run.
 
@@ -171,15 +210,15 @@ enrollment.progress    # 50
 
 ## Bootcamp progress
 
-| Day | Topic                             | Status      |
-| --- | --------------------------------- | ----------- |
-| 1   | Project setup and database models | Done        |
-| 2   | Authentication and roles          | In progress |
-| 3   | Course catalog and public pages   | Not started |
-| 4   | Enrollment and student dashboard  | Not started |
-| 5   | Instructor course builder         | Not started |
-| 6   | Admin panel and analytics         | Not started |
-| 7   | Polish, tests and deployment      | Not started |
+| Day | Topic | Status |
+|-----|-------|--------|
+| 1 | Project setup and database models | Done |
+| 2 | Authentication and roles | Done |
+| 3 | Course catalog, search and CSRF protection | Done |
+| 4 | Enrollment and student dashboard | Not started |
+| 5 | Instructor course builder | Not started |
+| 6 | Admin panel and analytics | Not started |
+| 7 | Polish, tests and deployment | Not started |
 
 ## Troubleshooting
 

@@ -2,33 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}CourseHub{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CourseHub{% endblock %} | CourseHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <nav>
-    <a href="{{ url_for('home') }}" class="brand">CourseHub</a>
-    <div>
-      {% if g.user %}
-        <span>{{ g.user.username }} ({{ g.user.role }})</span>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('logout') }}">Log out</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">Log in</a>
-        <a href="{{ url_for('register') }}">Register</a>
-      {% endif %}
-    </div>
-  </nav>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <main>
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a class="brand" href="{{ url_for('home') }}">CourseHub</a>
+
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('course_list') }}">Courses</a></li>
+          {% if current_user %}
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="nav-user">
+              <span class="badge badge-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+              {{ current_user.username }}
+            </li>
+            <li>
+              <form action="{{ url_for('logout') }}" method="post" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-ghost">Log out</button>
+              </form>
+            </li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">Log in</a></li>
+            <li><a class="btn btn-primary" href="{{ url_for('register') }}">Sign up</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <p class="flash {{ category }}">{{ message }}</p>
-      {% endfor %}
+      {% if messages %}
+        <div class="flashes" role="status" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endwith %}
 
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="footer">
+    <div class="container">CourseHub, MAD-1 Bootcamp V2</div>
+  </footer>
 </body>
 </html>

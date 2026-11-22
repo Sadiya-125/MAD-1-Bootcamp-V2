@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from "macros.html" import pagination with context %}
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Explore courses</h1>
+  <form class="search-bar" action="{{ url_for('course_list') }}" method="get" role="search">
+    <label for="q" class="visually-hidden">Search courses</label>
+    <input id="q" name="q" type="search" value="{{ filters.q }}" placeholder="Search by title or topic">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+</div>
+
+<div class="catalog">
+  <aside class="filters">
+    <form action="{{ url_for('course_list') }}" method="get">
+      <input type="hidden" name="q" value="{{ filters.q }}">
+
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="">All categories</option>
+          {% for c in categories %}
+            <option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="level">Level</label>
+        <select id="level" name="level">
+          <option value="">All levels</option>
+          {% for l in levels %}
+            <option value="{{ l }}" {% if filters.level == l %}selected{% endif %}>{{ l|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="price">Price</label>
+        <select id="price" name="price">
+          <option value="">Any price</option>
+          <option value="free" {% if filters.price == 'free' %}selected{% endif %}>Free</option>
+          <option value="paid" {% if filters.price == 'paid' %}selected{% endif %}>Paid</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Apply filters</button>
+      <a class="clear-link" href="{{ url_for('course_list') }}">Clear all</a>
+    </form>
+  </aside>
+
+  <section aria-label="Course results">
+    <p class="muted result-count">{{ page.total }} course{{ '' if page.total == 1 else 's' }} found</p>
+
+    {% if page.items %}
+      <div class="course-grid">
+        {% for course in page.items %}
+          <article class="course-card">
+            <a href="{{ url_for('course_detail', slug=course.slug) }}" class="course-thumb" aria-hidden="true" tabindex="-1">
+              {% if course.thumbnail %}
+                <img src="{{ course.thumbnail }}" alt="">
+              {% else %}
+                <span>{{ course.title[0] }}</span>
+              {% endif %}
+            </a>
+            <div class="course-body">
+              <div class="tags">
+                {% if course.is_featured %}<span class="badge badge-featured">Featured</span>{% endif %}
+                {% if course.category %}<span class="tag">{{ course.category|capitalize }}</span>{% endif %}
+                {% if course.level %}<span class="tag">{{ course.level|capitalize }}</span>{% endif %}
+              </div>
+              <h2><a href="{{ url_for('course_detail', slug=course.slug) }}">{{ course.title }}</a></h2>
+              <p class="muted">{{ course.short_description or '' }}</p>
+              <div class="course-meta">
+                <span>{{ course.instructor.username }} · {{ course.lessons|length }} lessons</span>
+                <strong>{{ course.price|price }}</strong>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+      {{ pagination(page) }}
+    {% else %}
+      <div class="empty-state">
+        <h2>No courses match</h2>
+        <p class="muted">Try a different search or clear the filters.</p>
+        <a class="btn btn-secondary" href="{{ url_for('course_list') }}">Show all courses</a>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

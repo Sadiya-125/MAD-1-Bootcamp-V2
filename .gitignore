@@ -1,4 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
 venv/
+.venv/
+
+# Secrets and local settings
 .env
 
-__pycache__/
+# Database (auto-created)
+instance/
+*.db
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

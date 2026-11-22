@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+{% set minutes = course.lessons|selectattr('duration')|sum(attribute='duration') %}
+
+<section class="course-hero">
+  <div>
+    <div class="tags">
+      {% if not course.is_published %}<span class="badge badge-draft">Draft</span>{% endif %}
+      {% if course.category %}<span class="tag">{{ course.category|capitalize }}</span>{% endif %}
+      {% if course.level %}<span class="tag">{{ course.level|capitalize }}</span>{% endif %}
+    </div>
+    <h1>{{ course.title }}</h1>
+    <p class="lead">{{ course.short_description or '' }}</p>
+    <p class="muted">
+      By {{ course.instructor.username }} · {{ course.lessons|length }} lessons
+      {% if minutes %} · {{ minutes }} min{% endif %}
+    </p>
+  </div>
+
+  <div class="enroll-box">
+    <p class="enroll-price">{{ course.price|price }}</p>
+    <p class="muted">Enrollment opens on Day 4.</p>
+  </div>
+</section>
+
+<div class="course-columns">
+  {% if course.description %}
+    <section>
+      <h2>About this course</h2>
+      <p class="prose">{{ course.description }}</p>
+    </section>
+  {% endif %}
+
+  <section>
+    <h2>Curriculum</h2>
+    {% if course.lessons %}
+      <div class="curriculum">
+        {% for lesson in course.lessons %}
+          <details>
+            <summary>
+              <span>{{ loop.index }}. {{ lesson.title }}</span>
+              <span class="muted">
+                {% if lesson.is_free_preview %}<span class="tag">Free preview</span>{% endif %}
+                {% if lesson.duration %}{{ lesson.duration }} min{% endif %}
+              </span>
+            </summary>
+            {% if lesson.is_free_preview and lesson.content %}
+              <p class="prose">{{ lesson.content }}</p>
+            {% else %}
+              <p class="muted">Enroll to unlock this lesson.</p>
+            {% endif %}
+          </details>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No lessons yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

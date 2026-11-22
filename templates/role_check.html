@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ area }} area{% endblock %}
+
+{% block content %}
+<section class="card narrow">
+  <h1>{{ area }} area</h1>
+  <p>Access check passed. Only {{ area|lower }}s can open this page.</p>
+  <p class="muted">This placeholder is replaced by the real {{ area|lower }} pages later in the bootcamp.</p>
+  <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Back to dashboard</a>
+</section>
+{% endblock %}
