@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import progress_bar %}
 {% block title %}{{ course.title }}{% endblock %}
 
 {% block content %}
@@ -21,7 +22,20 @@
 
   <div class="enroll-box">
     <p class="enroll-price">{{ course.price|price }}</p>
-    <p class="muted">Enrollment opens on Day 4.</p>
+    {% if enrollment %}
+      {{ progress_bar(enrollment.progress) }}
+      <a class="btn btn-primary btn-block" href="{{ url_for('course_player', slug=course.slug) }}">Continue learning</a>
+    {% elif not current_user %}
+      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=request.path) }}">Log in to enroll</a>
+    {% elif current_user.is_student %}
+      <form method="post" action="{{ url_for('enroll', course_id=course.id) }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary btn-block">Enroll now</button>
+      </form>
+      {% if course.price %}<p class="muted small">Payments aren't set up yet, so enrolling is free.</p>{% endif %}
+    {% else %}
+      <p class="muted">Only student accounts can enroll.</p>
+    {% endif %}
   </div>
 </section>
 

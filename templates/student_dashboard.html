@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "macros.html" import progress_bar %}
+{% block title %}My learning{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>My learning</h1>
+  <p class="muted">
+    {{ enrollments|length }} course{{ '' if enrollments|length == 1 else 's' }} enrolled,
+    {{ enrollments|selectattr('completed_at')|list|length }} completed
+  </p>
+</div>
+
+{% if enrollments %}
+  <div class="course-grid">
+    {% for e in enrollments %}
+      {% set percent = e.progress %}
+      <article class="card">
+        <div class="tags">
+          {% if e.completed_at %}<span class="badge badge-published">Completed</span>{% endif %}
+          {% if e.course.level %}<span class="tag">{{ e.course.level|capitalize }}</span>{% endif %}
+        </div>
+        <h2 class="card-title">{{ e.course.title }}</h2>
+        <p class="muted">By {{ e.course.instructor.username }} · {{ e.course.lessons|length }} lessons</p>
+        {{ progress_bar(percent) }}
+        <a class="btn {{ 'btn-secondary' if e.completed_at else 'btn-primary' }}"
+           href="{{ url_for('course_player', slug=e.course.slug) }}">
+          {{ 'Review' if e.completed_at else ('Start' if percent == 0 else 'Continue') }}
+        </a>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h2>You haven't enrolled in anything yet</h2>
+    <p class="muted">Pick a course from the catalog to get started.</p>
+    <a class="btn btn-primary" href="{{ url_for('course_list') }}">Browse courses</a>
+  </div>
+{% endif %}
+{% endblock %}

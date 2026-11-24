@@ -51,13 +51,15 @@ coursehub/
 │   └── coursehub.db    # SQLite database (created automatically)
 ├── templates/
 │   ├── base.html           # Layout: navbar, flash messages, footer
-│   ├── macros.html         # Reusable pagination macro
+│   ├── macros.html         # pagination and progress_bar macros
 │   ├── login.html
 │   ├── register.html
 │   ├── dashboard.html      # Different cards for student, instructor, admin
 │   ├── role_check.html     # Placeholder pages that prove the role checks work
 │   ├── course_list.html    # Catalog with search, filters and pagination
-│   ├── course_detail.html  # Course page with curriculum
+│   ├── course_detail.html  # Course page with curriculum and enroll button
+│   ├── student_dashboard.html  # My learning, with a progress bar per course
+│   ├── course_player.html  # Lesson list, lesson content, mark complete
 │   └── 403.html            # Access denied page
 └── static/
     └── style.css
@@ -74,7 +76,10 @@ coursehub/
 | GET | `/courses` | Public | Catalog with `q`, `category`, `level`, `price` and `page` |
 | GET | `/courses/<slug>` | Public | Course page (drafts only for their instructor and admins) |
 | GET | `/search` | Public | Redirects to the catalog with the same search |
-| GET | `/student/area` | Student | Placeholder, replaced on Day 4 |
+| POST | `/enroll/<course_id>` | Student | Enroll in a published course |
+| GET | `/student/dashboard` | Student | My courses with progress |
+| GET | `/learn/<slug>` | Enrolled student | Course player (`?lesson=<id>` picks a lesson) |
+| POST | `/lesson/<id>/complete` | Enrolled student | Mark a lesson done or not done |
 | GET | `/instructor/area` | Instructor | Placeholder, replaced on Day 5 |
 | GET | `/admin/area` | Admin | Placeholder, replaced on Day 6 |
 
@@ -215,7 +220,7 @@ enrollment.progress    # 50
 | 1 | Project setup and database models | Done |
 | 2 | Authentication and roles | Done |
 | 3 | Course catalog, search and CSRF protection | Done |
-| 4 | Enrollment and student dashboard | Not started |
+| 4 | Enrollment, course player and progress | Done |
 | 5 | Instructor course builder | Not started |
 | 6 | Admin panel and analytics | Not started |
 | 7 | Polish, tests and deployment | Not started |

@@ -616,3 +616,142 @@ input[type="url"] {
     grid-template-columns: 1fr;
   }
 }
+
+.small {
+  font-size: 0.85rem;
+}
+
+.card-title {
+  margin-top: var(--space-2);
+}
+
+.progress {
+  height: 8px;
+  margin-top: var(--space-3);
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  margin: var(--space-1) 0 var(--space-4);
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.player {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.player-sidebar {
+  position: sticky;
+  top: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.player-sidebar h2 {
+  margin-top: var(--space-2);
+}
+
+.lesson-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson-list a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: 8px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.lesson-list a:hover {
+  background: var(--color-bg);
+}
+
+.lesson-list a.is-current {
+  background: var(--color-info-bg);
+  font-weight: 600;
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.is-done .check {
+  background: var(--color-success-text);
+  border-color: var(--color-success-text);
+  color: #fff;
+}
+
+.player-content {
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.lesson-body {
+  margin: var(--space-6) 0;
+  font-size: 1.05rem;
+}
+
+.player-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.player-nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+@media (max-width: 760px) {
+  .player {
+    grid-template-columns: 1fr;
+  }
+
+  .player-sidebar {
+    position: static;
+  }
+
+  .player-content {
+    padding: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+}

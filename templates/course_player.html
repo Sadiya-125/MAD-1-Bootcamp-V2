@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "macros.html" import progress_bar %}
+{% block title %}{{ lesson.title if lesson else course.title }}{% endblock %}
+
+{% block content %}
+<div class="player">
+  <aside class="player-sidebar">
+    <a class="muted small" href="{{ url_for('student_dashboard') }}">&larr; My learning</a>
+    <h2>{{ course.title }}</h2>
+    {{ progress_bar(enrollment.progress) }}
+
+    <ol class="lesson-list">
+      {% for l in course.lessons %}
+        <li>
+          <a href="{{ url_for('course_player', slug=course.slug, lesson=l.id) }}"
+             class="{{ 'is-current' if lesson and l.id == lesson.id }} {{ 'is-done' if l.id in done_ids }}"
+             {% if lesson and l.id == lesson.id %}aria-current="page"{% endif %}>
+            <span class="check" aria-hidden="true">{{ '✓' if l.id in done_ids else loop.index }}</span>
+            <span>{{ l.title }}</span>
+            {% if l.id in done_ids %}<span class="visually-hidden">(completed)</span>{% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
+  </aside>
+
+  <section class="player-content">
+    {% if lesson %}
+      <p class="muted small">Lesson {{ course.lessons.index(lesson) + 1 }} of {{ course.lessons|length }}{% if lesson.duration %} · {{ lesson.duration }} min{% endif %}</p>
+      <h1>{{ lesson.title }}</h1>
+
+      {% if lesson.video_url %}
+        <p><a class="btn btn-secondary" href="{{ lesson.video_url }}" target="_blank" rel="noopener">Watch the video</a></p>
+      {% endif %}
+
+      <div class="prose lesson-body">{{ lesson.content or 'No notes for this lesson yet.' }}</div>
+
+      <div class="player-actions">
+        <form method="post" action="{{ url_for('toggle_completion', lesson_id=lesson.id) }}" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          {% if lesson.id in done_ids %}
+            <button type="submit" class="btn btn-secondary">Mark as not done</button>
+          {% else %}
+            <button type="submit" class="btn btn-primary">Mark as complete</button>
+          {% endif %}
+        </form>
+
+        <div class="player-nav">
+          {% if prev_lesson %}
+            <a class="btn btn-ghost" href="{{ url_for('course_player', slug=course.slug, lesson=prev_lesson.id) }}">&larr; Previous</a>
+          {% endif %}
+          {% if next_lesson %}
+            <a class="btn btn-ghost" href="{{ url_for('course_player', slug=course.slug, lesson=next_lesson.id) }}">Next &rarr;</a>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <h2>No lessons yet</h2>
+        <p class="muted">The instructor hasn't added lessons to this course.</p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
