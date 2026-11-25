@@ -13,7 +13,7 @@
       <h2>My Courses</h2>
       <p class="stat">{{ stats.enrolled }}</p>
       <p class="muted">courses enrolled, {{ stats.completed }} completed</p>
-      <a class="btn btn-secondary" href="{{ url_for('student_area') }}">Go to my learning</a>
+      <a class="btn btn-secondary" href="{{ url_for('student.dashboard') }}">Go to my learning</a>
     </article>
     <article class="card card-placeholder">
       <h2>Browse Courses</h2>
@@ -27,7 +27,7 @@
       <h2>Teaching</h2>
       <p class="stat">{{ stats.courses }}</p>
       <p class="muted">courses, {{ stats.published }} published</p>
-      <a class="btn btn-secondary" href="{{ url_for('instructor_area') }}">Go to teaching</a>
+      <a class="btn btn-secondary" href="{{ url_for('instructor.area') }}">Go to teaching</a>
     </article>
     <article class="card">
       <h2>Students</h2>
@@ -54,6 +54,6 @@
       <p class="muted">across all courses</p>
     </article>
   </div>
-  <p><a class="btn btn-secondary" href="{{ url_for('admin_area') }}">Go to admin</a></p>
+  <p><a class="btn btn-secondary" href="{{ url_for('admin.area') }}">Go to admin</a></p>
 {% endif %}
 {% endblock %}

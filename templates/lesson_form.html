@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit lesson' if lesson else 'New lesson' }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <a class="muted small" href="{{ url_for('instructor.lesson_list', course_id=course.id) }}">&larr; {{ course.title }}</a>
+  <h1>{{ 'Edit lesson' if lesson else 'New lesson' }}</h1>
+</div>
+
+<form method="post" class="form-card" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="field">
+    <label for="title">Lesson title</label>
+    <input id="title" name="title" type="text" value="{{ values.title or '' }}" required maxlength="200">
+  </div>
+
+  <div class="field">
+    <label for="content">Lesson notes</label>
+    <textarea id="content" name="content" rows="10">{{ values.content or '' }}</textarea>
+  </div>
+
+  <div class="field">
+    <label for="video_url">Video link (optional)</label>
+    <input id="video_url" name="video_url" type="url" value="{{ values.video_url or '' }}" placeholder="https://...">
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="duration">Duration (minutes)</label>
+      <input id="duration" name="duration" type="number" min="0" value="{{ values.duration if values.duration is not none else '' }}">
+    </div>
+    <div class="field">
+      <label for="order">Position</label>
+      <input id="order" name="order" type="number" min="0" value="{{ values.order if values.order is not none else '' }}">
+    </div>
+  </div>
+
+  <label class="checkbox">
+    <input type="checkbox" name="is_free_preview" {% if values.is_free_preview %}checked{% endif %}>
+    Free preview (visitors can read it before enrolling)
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">{{ 'Save lesson' if lesson else 'Add lesson' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('instructor.lesson_list', course_id=course.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

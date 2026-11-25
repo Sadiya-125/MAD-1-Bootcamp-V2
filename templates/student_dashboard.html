@@ -24,7 +24,7 @@
         <p class="muted">By {{ e.course.instructor.username }} · {{ e.course.lessons|length }} lessons</p>
         {{ progress_bar(percent) }}
         <a class="btn {{ 'btn-secondary' if e.completed_at else 'btn-primary' }}"
-           href="{{ url_for('course_player', slug=e.course.slug) }}">
+           href="{{ url_for('student.course_player', slug=e.course.slug) }}">
           {{ 'Review' if e.completed_at else ('Start' if percent == 0 else 'Continue') }}
         </a>
       </article>
@@ -34,7 +34,7 @@
   <div class="empty-state">
     <h2>You haven't enrolled in anything yet</h2>
     <p class="muted">Pick a course from the catalog to get started.</p>
-    <a class="btn btn-primary" href="{{ url_for('course_list') }}">Browse courses</a>
+    <a class="btn btn-primary" href="{{ url_for('courses.course_list') }}">Browse courses</a>
   </div>
 {% endif %}
 {% endblock %}

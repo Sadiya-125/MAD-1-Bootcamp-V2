@@ -14,26 +14,26 @@
 
   <header class="navbar">
     <div class="container navbar-inner">
-      <a class="brand" href="{{ url_for('home') }}">CourseHub</a>
+      <a class="brand" href="{{ url_for('courses.home') }}">CourseHub</a>
 
       <nav aria-label="Main">
         <ul class="nav-links">
-          <li><a href="{{ url_for('course_list') }}">Courses</a></li>
+          <li><a href="{{ url_for('courses.course_list') }}">Courses</a></li>
           {% if current_user %}
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
             <li class="nav-user">
               <span class="badge badge-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
               {{ current_user.username }}
             </li>
             <li>
-              <form action="{{ url_for('logout') }}" method="post" class="inline-form">
+              <form action="{{ url_for('auth.logout') }}" method="post" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-ghost">Log out</button>
               </form>
             </li>
           {% else %}
-            <li><a href="{{ url_for('login') }}">Log in</a></li>
-            <li><a class="btn btn-primary" href="{{ url_for('register') }}">Sign up</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
+            <li><a class="btn btn-primary" href="{{ url_for('auth.register') }}">Sign up</a></li>
           {% endif %}
         </ul>
       </nav>

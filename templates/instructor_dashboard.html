@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Teaching{% endblock %}
+
+{% block content %}
+<div class="page-header page-header-row">
+  <div>
+    <h1>Teaching</h1>
+    <p class="muted">
+      {{ courses|length }} course{{ '' if courses|length == 1 else 's' }},
+      {{ courses|selectattr('is_published')|list|length }} published,
+      {{ courses|map(attribute='enrollments')|map('length')|sum }} students in total
+    </p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('instructor.course_create') }}">New course</a>
+</div>
+
+{% if courses %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Course</th>
+          <th scope="col">Status</th>
+          <th scope="col">Lessons</th>
+          <th scope="col">Students</th>
+          <th scope="col">Price</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td>
+              <a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a>
+              <div class="muted small">{{ (course.category or '')|capitalize }} · {{ (course.level or '')|capitalize }}</div>
+            </td>
+            <td>
+              {% if course.is_published %}
+                <span class="badge badge-published">Published</span>
+              {% else %}
+                <span class="badge badge-draft">Draft</span>
+              {% endif %}
+            </td>
+            <td>{{ course.lessons|length }}</td>
+            <td>{{ course.enrollments|length }}</td>
+            <td>{{ course.price|price }}</td>
+            <td class="actions">
+              <a class="btn btn-secondary" href="{{ url_for('instructor.lesson_list', course_id=course.id) }}">Lessons</a>
+              <a class="btn btn-ghost" href="{{ url_for('instructor.course_edit', course_id=course.id) }}">Edit</a>
+              <form method="post" action="{{ url_for('instructor.toggle_publish', course_id=course.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn btn-ghost">{{ 'Unpublish' if course.is_published else 'Publish' }}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h2>You haven't created a course yet</h2>
+    <p class="muted">Start with the basics: a title, a category and a level.</p>
+    <a class="btn btn-primary" href="{{ url_for('instructor.course_create') }}">Create your first course</a>
+  </div>
+{% endif %}
+{% endblock %}

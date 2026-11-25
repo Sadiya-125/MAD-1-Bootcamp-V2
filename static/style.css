@@ -626,18 +626,31 @@ input[type="url"] {
 }
 
 .progress {
+  display: block;
+  width: 100%;
   height: 8px;
   margin-top: var(--space-3);
+  border: 0;
   border-radius: 999px;
   background: var(--color-border);
   overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.progress-fill {
-  height: 100%;
+.progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: var(--color-border);
+}
+
+.progress::-webkit-progress-value {
   border-radius: 999px;
   background: var(--color-primary);
-  transition: width 0.3s ease;
+}
+
+.progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--color-primary);
 }
 
 .progress-label {
@@ -750,8 +763,141 @@ input[type="url"] {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .progress-fill {
-    transition: none;
-  }
+
+.page-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-muted);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table td.actions {
+  justify-content: flex-end;
+}
+
+.form-card {
+  max-width: 720px;
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.field textarea,
+.field select,
+.field input[type="number"],
+.field input[type="url"] {
+  width: 100%;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.steps .is-current {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.lesson-rows {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.lesson-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.lesson-row-main {
+  flex: 1;
+}
+
+.btn-danger:hover {
+  color: var(--color-error-text);
 }

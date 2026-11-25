@@ -5,7 +5,7 @@
 {% block content %}
 <div class="page-header">
   <h1>Explore courses</h1>
-  <form class="search-bar" action="{{ url_for('course_list') }}" method="get" role="search">
+  <form class="search-bar" action="{{ url_for('courses.course_list') }}" method="get" role="search">
     <label for="q" class="visually-hidden">Search courses</label>
     <input id="q" name="q" type="search" value="{{ filters.q }}" placeholder="Search by title or topic">
     <button type="submit" class="btn btn-primary">Search</button>
@@ -14,7 +14,7 @@
 
 <div class="catalog">
   <aside class="filters">
-    <form action="{{ url_for('course_list') }}" method="get">
+    <form action="{{ url_for('courses.course_list') }}" method="get">
       <input type="hidden" name="q" value="{{ filters.q }}">
 
       <div class="field">
@@ -47,7 +47,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary btn-block">Apply filters</button>
-      <a class="clear-link" href="{{ url_for('course_list') }}">Clear all</a>
+      <a class="clear-link" href="{{ url_for('courses.course_list') }}">Clear all</a>
     </form>
   </aside>
 
@@ -58,7 +58,7 @@
       <div class="course-grid">
         {% for course in page.items %}
           <article class="course-card">
-            <a href="{{ url_for('course_detail', slug=course.slug) }}" class="course-thumb" aria-hidden="true" tabindex="-1">
+            <a href="{{ url_for('courses.course_detail', slug=course.slug) }}" class="course-thumb" aria-hidden="true" tabindex="-1">
               {% if course.thumbnail %}
                 <img src="{{ course.thumbnail }}" alt="">
               {% else %}
@@ -71,7 +71,7 @@
                 {% if course.category %}<span class="tag">{{ course.category|capitalize }}</span>{% endif %}
                 {% if course.level %}<span class="tag">{{ course.level|capitalize }}</span>{% endif %}
               </div>
-              <h2><a href="{{ url_for('course_detail', slug=course.slug) }}">{{ course.title }}</a></h2>
+              <h2><a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a></h2>
               <p class="muted">{{ course.short_description or '' }}</p>
               <div class="course-meta">
                 <span>{{ course.instructor.username }} · {{ course.lessons|length }} lessons</span>
@@ -86,7 +86,7 @@
       <div class="empty-state">
         <h2>No courses match</h2>
         <p class="muted">Try a different search or clear the filters.</p>
-        <a class="btn btn-secondary" href="{{ url_for('course_list') }}">Show all courses</a>
+        <a class="btn btn-secondary" href="{{ url_for('courses.course_list') }}">Show all courses</a>
       </div>
     {% endif %}
   </section>

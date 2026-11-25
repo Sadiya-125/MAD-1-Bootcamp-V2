@@ -5,14 +5,14 @@
 {% block content %}
 <div class="player">
   <aside class="player-sidebar">
-    <a class="muted small" href="{{ url_for('student_dashboard') }}">&larr; My learning</a>
+    <a class="muted small" href="{{ url_for('student.dashboard') }}">&larr; My learning</a>
     <h2>{{ course.title }}</h2>
     {{ progress_bar(enrollment.progress) }}
 
     <ol class="lesson-list">
       {% for l in course.lessons %}
         <li>
-          <a href="{{ url_for('course_player', slug=course.slug, lesson=l.id) }}"
+          <a href="{{ url_for('student.course_player', slug=course.slug, lesson=l.id) }}"
              class="{{ 'is-current' if lesson and l.id == lesson.id }} {{ 'is-done' if l.id in done_ids }}"
              {% if lesson and l.id == lesson.id %}aria-current="page"{% endif %}>
             <span class="check" aria-hidden="true">{{ '✓' if l.id in done_ids else loop.index }}</span>
@@ -36,7 +36,7 @@
       <div class="prose lesson-body">{{ lesson.content or 'No notes for this lesson yet.' }}</div>
 
       <div class="player-actions">
-        <form method="post" action="{{ url_for('toggle_completion', lesson_id=lesson.id) }}" class="inline-form">
+        <form method="post" action="{{ url_for('student.toggle_completion', lesson_id=lesson.id) }}" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           {% if lesson.id in done_ids %}
             <button type="submit" class="btn btn-secondary">Mark as not done</button>
@@ -47,10 +47,10 @@
 
         <div class="player-nav">
           {% if prev_lesson %}
-            <a class="btn btn-ghost" href="{{ url_for('course_player', slug=course.slug, lesson=prev_lesson.id) }}">&larr; Previous</a>
+            <a class="btn btn-ghost" href="{{ url_for('student.course_player', slug=course.slug, lesson=prev_lesson.id) }}">&larr; Previous</a>
           {% endif %}
           {% if next_lesson %}
-            <a class="btn btn-ghost" href="{{ url_for('course_player', slug=course.slug, lesson=next_lesson.id) }}">Next &rarr;</a>
+            <a class="btn btn-ghost" href="{{ url_for('student.course_player', slug=course.slug, lesson=next_lesson.id) }}">Next &rarr;</a>
           {% endif %}
         </div>
       </div>

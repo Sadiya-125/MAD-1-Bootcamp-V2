@@ -24,11 +24,11 @@
     <p class="enroll-price">{{ course.price|price }}</p>
     {% if enrollment %}
       {{ progress_bar(enrollment.progress) }}
-      <a class="btn btn-primary btn-block" href="{{ url_for('course_player', slug=course.slug) }}">Continue learning</a>
+      <a class="btn btn-primary btn-block" href="{{ url_for('student.course_player', slug=course.slug) }}">Continue learning</a>
     {% elif not current_user %}
-      <a class="btn btn-primary btn-block" href="{{ url_for('login', next=request.path) }}">Log in to enroll</a>
+      <a class="btn btn-primary btn-block" href="{{ url_for('auth.login', next=request.path) }}">Log in to enroll</a>
     {% elif current_user.is_student %}
-      <form method="post" action="{{ url_for('enroll', course_id=course.id) }}" class="inline-form">
+      <form method="post" action="{{ url_for('student.enroll', course_id=course.id) }}" class="inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="btn btn-primary btn-block">Enroll now</button>
       </form>

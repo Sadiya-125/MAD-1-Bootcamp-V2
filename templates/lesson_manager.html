@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Lessons: {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="page-header page-header-row">
+  <div>
+    <a class="muted small" href="{{ url_for('instructor.dashboard') }}">&larr; Teaching</a>
+    <h1>{{ course.title }}</h1>
+    <p class="muted">
+      {% if course.is_published %}<span class="badge badge-published">Published</span>{% else %}<span class="badge badge-draft">Draft</span>{% endif %}
+      {{ course.lessons|length }} lesson{{ '' if course.lessons|length == 1 else 's' }} · {{ course.enrollments|length }} student{{ '' if course.enrollments|length == 1 else 's' }}
+    </p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('instructor.course_edit', course_id=course.id) }}">Edit details</a>
+    <a class="btn btn-ghost" href="{{ url_for('courses.course_detail', slug=course.slug) }}">Preview</a>
+    <form method="post" action="{{ url_for('instructor.toggle_publish', course_id=course.id) }}" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button type="submit" class="btn {{ 'btn-secondary' if course.is_published else 'btn-primary' }}">
+        {{ 'Unpublish' if course.is_published else 'Publish' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="section-head">
+  <h2>Lessons</h2>
+  <a class="btn btn-primary" href="{{ url_for('instructor.lesson_create', course_id=course.id) }}">Add lesson</a>
+</div>
+
+{% if course.lessons %}
+  <ol class="lesson-rows">
+    {% for lesson in course.lessons %}
+      <li class="lesson-row">
+        <span class="check" aria-hidden="true">{{ lesson.order }}</span>
+        <div class="lesson-row-main">
+          <strong>{{ lesson.title }}</strong>
+          <div class="muted small">
+            {% if lesson.duration %}{{ lesson.duration }} min{% else %}No duration{% endif %}
+            {% if lesson.video_url %} · Video{% endif %}
+            {% if lesson.is_free_preview %} · Free preview{% endif %}
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-ghost" href="{{ url_for('instructor.lesson_edit', lesson_id=lesson.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('instructor.lesson_delete', lesson_id=lesson.id) }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-ghost btn-danger" aria-label="Delete {{ lesson.title }}">Delete</button>
+          </form>
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+  <p class="muted small">Lessons are shown in order of their position number. Edit a lesson to move it.</p>
+{% else %}
+  <div class="empty-state">
+    <h2>No lessons yet</h2>
+    <p class="muted">A course needs at least one lesson before you can publish it.</p>
+    <a class="btn btn-primary" href="{{ url_for('instructor.lesson_create', course_id=course.id) }}">Add the first lesson</a>
+  </div>
+{% endif %}
+{% endblock %}

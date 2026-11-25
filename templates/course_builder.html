@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit course' if course else 'New course' }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <a class="muted small" href="{{ url_for('instructor.dashboard') }}">&larr; Teaching</a>
+  <h1>{{ 'Edit ' ~ course.title if course else 'New course' }}</h1>
+  {% if not course %}
+    <ol class="steps" aria-label="Steps">
+      <li class="is-current">1. Course details</li>
+      <li>2. Add lessons</li>
+      <li>3. Publish</li>
+    </ol>
+  {% endif %}
+</div>
+
+<form method="post" class="form-card" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="field">
+    <label for="title">Title</label>
+    <input id="title" name="title" type="text" value="{{ values.title or '' }}" required maxlength="200">
+  </div>
+
+  <div class="field">
+    <label for="short_description">Short description</label>
+    <input id="short_description" name="short_description" type="text"
+           value="{{ values.short_description or '' }}" maxlength="500"
+           aria-describedby="short-hint">
+    <small id="short-hint" class="hint">One line shown on the course card.</small>
+  </div>
+
+  <div class="field">
+    <label for="description">Full description</label>
+    <textarea id="description" name="description" rows="6">{{ values.description or '' }}</textarea>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <option value="">Choose...</option>
+        {% for c in categories %}
+          <option value="{{ c }}" {% if values.category == c %}selected{% endif %}>{{ c|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="level">Level</label>
+      <select id="level" name="level" required>
+        <option value="">Choose...</option>
+        {% for l in levels %}
+          <option value="{{ l }}" {% if values.level == l %}selected{% endif %}>{{ l|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="price">Price (₹)</label>
+      <input id="price" name="price" type="number" min="0" step="1" value="{{ values.price }}" aria-describedby="price-hint">
+      <small id="price-hint" class="hint">0 means free.</small>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="thumbnail">Thumbnail image link (optional)</label>
+    <input id="thumbnail" name="thumbnail" type="url" value="{{ values.thumbnail or '' }}" placeholder="https://...">
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">{{ 'Save changes' if course else 'Save and add lessons' }}</button>
+    <a class="btn btn-ghost" href="{{ url_for('instructor.lesson_list', course_id=course.id) if course else url_for('instructor.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

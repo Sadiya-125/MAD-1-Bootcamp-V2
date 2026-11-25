@@ -41,7 +41,15 @@ A student can enroll in a course only once and complete a lesson only once. The 
 
 ```
 coursehub/
-├── app.py              # App factory, routes, access decorators, CLI commands
+├── app.py              # App factory, error pages, CLI commands
+├── helpers.py          # Access decorators and small shared helpers
+├── routes/             # One Blueprint per area of the app
+│   ├── __init__.py     # register_blueprints(app)
+│   ├── auth.py         # Register, login, logout, dashboard
+│   ├── courses.py      # Home, catalog, course page, search
+│   ├── student.py      # Enroll, My learning, course player
+│   ├── instructor.py   # Course builder
+│   └── admin.py        # Admin pages
 ├── models.py           # Database models
 ├── config.py           # Settings (secret key, database URL)
 ├── requirements.txt    # Python dependencies
@@ -60,6 +68,10 @@ coursehub/
 │   ├── course_detail.html  # Course page with curriculum and enroll button
 │   ├── student_dashboard.html  # My learning, with a progress bar per course
 │   ├── course_player.html  # Lesson list, lesson content, mark complete
+│   ├── instructor_dashboard.html  # Teaching: courses with lessons, students and status
+│   ├── course_builder.html # New / edit course form
+│   ├── lesson_manager.html # Lessons of one course, publish button
+│   ├── lesson_form.html    # New / edit lesson form
 │   └── 403.html            # Access denied page
 └── static/
     └── style.css
@@ -80,7 +92,14 @@ coursehub/
 | GET | `/student/dashboard` | Student | My courses with progress |
 | GET | `/learn/<slug>` | Enrolled student | Course player (`?lesson=<id>` picks a lesson) |
 | POST | `/lesson/<id>/complete` | Enrolled student | Mark a lesson done or not done |
-| GET | `/instructor/area` | Instructor | Placeholder, replaced on Day 5 |
+| GET | `/instructor/dashboard` | Instructor | My courses with stats |
+| GET/POST | `/instructor/course/new` | Instructor | Create a course (saved as a draft) |
+| GET/POST | `/instructor/course/<id>/edit` | Course owner | Edit course details |
+| GET | `/instructor/course/<id>/lessons` | Course owner | Manage lessons |
+| POST | `/instructor/course/<id>/publish` | Course owner | Publish or unpublish |
+| GET/POST | `/instructor/lesson/new?course_id=` | Course owner | Add a lesson |
+| GET/POST | `/instructor/lesson/<id>/edit` | Course owner | Edit a lesson |
+| POST | `/instructor/lesson/<id>/delete` | Course owner | Delete a lesson |
 | GET | `/admin/area` | Admin | Placeholder, replaced on Day 6 |
 
 How it works:
@@ -94,6 +113,8 @@ How it works:
 - Deactivated accounts (`is_active = False`) can't log in and are logged out on their next request.
 
 Every POST form has a hidden CSRF token (Flask-WTF), so other websites can't submit forms on a user's behalf.
+
+The routes are split into Flask Blueprints, one file per area in `routes/`. A Blueprint's routes are named with its prefix, so templates link to them as `url_for('auth.login')`, `url_for('courses.course_list')`, `url_for('student.dashboard')` and so on.
 
 ## Setup
 
@@ -221,7 +242,7 @@ enrollment.progress    # 50
 | 2 | Authentication and roles | Done |
 | 3 | Course catalog, search and CSRF protection | Done |
 | 4 | Enrollment, course player and progress | Done |
-| 5 | Instructor course builder | Not started |
+| 5 | Instructor course builder | Done |
 | 6 | Admin panel and analytics | Not started |
 | 7 | Polish, tests and deployment | Not started |
 
