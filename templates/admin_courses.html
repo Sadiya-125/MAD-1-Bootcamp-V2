@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "macros.html" import admin_tabs %}
+{% block title %}All courses{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Courses</h1>
+  {{ admin_tabs('courses') }}
+</div>
+
+{% if courses %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Course</th>
+          <th scope="col">Instructor</th>
+          <th scope="col">Status</th>
+          <th scope="col">Students</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td>
+              <a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a>
+              <div class="muted small">{{ course.lessons|length }} lessons · {{ course.price|price }}</div>
+            </td>
+            <td>{{ course.instructor.username }}</td>
+            <td>
+              <div class="tags">
+                {% if course.is_published %}
+                  <span class="badge badge-published">Published</span>
+                {% else %}
+                  <span class="badge badge-draft">Draft</span>
+                {% endif %}
+                {% if course.is_featured %}<span class="badge badge-featured">Featured</span>{% endif %}
+              </div>
+            </td>
+            <td>{{ course.enrollments|length }}</td>
+            <td class="actions">
+              <form method="post" action="{{ url_for('admin.toggle_publish', course_id=course.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-secondary">{{ 'Unpublish' if course.is_published else 'Publish' }}</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.toggle_featured', course_id=course.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-ghost">{{ 'Unfeature' if course.is_featured else 'Feature' }}</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h2>No courses yet</h2>
+    <p class="muted">Courses appear here as soon as an instructor creates one.</p>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "macros.html" import admin_tabs, pagination with context %}
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Users</h1>
+  {{ admin_tabs('users') }}
+</div>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">User</th>
+        <th scope="col">Role</th>
+        <th scope="col">Status</th>
+        <th scope="col">Joined</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in page.items %}
+        <tr>
+          <td>
+            <strong>{{ user.username }}</strong>
+            <div class="muted small">{{ user.email }}</div>
+          </td>
+          <td><span class="badge badge-{{ user.role }}">{{ user.role|capitalize }}</span></td>
+          <td>
+            {% if user.is_active %}
+              <span class="badge badge-published">Active</span>
+            {% else %}
+              <span class="badge badge-draft">Deactivated</span>
+            {% endif %}
+          </td>
+          <td>{{ user.created_at.strftime('%d %b %Y') }}</td>
+          <td class="actions">
+            {% if user.id != current_user.id %}
+              <form method="post" action="{{ url_for('admin.toggle_user_role', user_id=user.id) }}" class="inline-form role-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="page" value="{{ page.page }}">
+                <label for="role-{{ user.id }}" class="visually-hidden">Role for {{ user.username }}</label>
+                <select id="role-{{ user.id }}" name="role">
+                  {% for r in roles %}
+                    <option value="{{ r }}" {% if user.role == r %}selected{% endif %}>{{ r|capitalize }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-secondary">Change</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.toggle_user_active', user_id=user.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="page" value="{{ page.page }}">
+                <button type="submit" class="btn btn-ghost {{ 'btn-danger' if user.is_active }}">
+                  {{ 'Deactivate' if user.is_active else 'Reactivate' }}
+                </button>
+              </form>
+            {% else %}
+              <span class="muted small">This is you</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{{ pagination(page) }}
+{% endblock %}

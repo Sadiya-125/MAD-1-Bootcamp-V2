@@ -8,7 +8,7 @@ from helpers import (
     is_safe_next,
     login_required,
 )
-from models import Course, Enrollment, User, db
+from models import User, db
 
 bp = Blueprint("auth", __name__)
 
@@ -117,23 +117,8 @@ def logout():
 @bp.route("/dashboard")
 @login_required
 def dashboard():
-    user = g.user
-    if user.is_student:
+    if g.user.is_student:
         return redirect(url_for("student.dashboard"))
-    if user.is_instructor:
+    if g.user.is_instructor:
         return redirect(url_for("instructor.dashboard"))
-    stats = {}
-    if user.is_student:
-        stats["enrolled"] = len(user.enrollments)
-        stats["completed"] = sum(1 for e in user.enrollments if e.completed_at)
-    elif user.is_instructor:
-        stats["courses"] = len(user.taught_courses)
-        stats["published"] = sum(1 for c in user.taught_courses if c.is_published)
-        stats["students"] = sum(len(c.enrollments) for c in user.taught_courses)
-    elif user.is_admin:
-        stats["users"] = db.session.scalar(db.select(db.func.count(User.id)))
-        stats["courses"] = db.session.scalar(db.select(db.func.count(Course.id)))
-        stats["enrollments"] = db.session.scalar(
-            db.select(db.func.count(Enrollment.id))
-        )
-    return render_template("dashboard.html", stats=stats)
+    return redirect(url_for("admin.dashboard"))

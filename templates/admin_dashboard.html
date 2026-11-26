@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "macros.html" import stat_card, admin_tabs %}
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Admin</h1>
+  {{ admin_tabs('overview') }}
+</div>
+
+<div class="card-grid">
+  {{ stat_card("Users", stats.users, stats.students ~ " student" ~ ("" if stats.students == 1 else "s") ~ ", " ~ stats.instructors ~ " instructor" ~ ("" if stats.instructors == 1 else "s")) }}
+  {{ stat_card("Courses", stats.courses, stats.published ~ " published") }}
+  {{ stat_card("Enrollments", stats.enrollments, stats.completed ~ " finished") }}
+  {{ stat_card("Completion rate", stats.completion_rate ~ "%", "of enrollments finished") }}
+</div>
+
+<div class="admin-columns">
+  <section class="card">
+    <h2>Most popular courses</h2>
+    {% if top_courses %}
+      {% set top = top_courses[0].students %}
+      <ul class="bar-chart">
+        {% for row in top_courses %}
+          <li>
+            <span class="bar-label">{{ row.title }}</span>
+            <progress class="bar" value="{{ row.students }}" max="{{ top }}" aria-label="{{ row.title }}: {{ row.students }} students">{{ row.students }}</progress>
+            <span class="bar-value">{{ row.students }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No enrollments yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Recent enrollments</h2>
+    {% if recent %}
+      <table class="table compact">
+        <thead>
+          <tr><th scope="col">Student</th><th scope="col">Course</th><th scope="col">Date</th></tr>
+        </thead>
+        <tbody>
+          {% for e in recent %}
+            <tr>
+              <td>{{ e.student.username }}</td>
+              <td>{{ e.course.title }}</td>
+              <td>{{ e.enrolled_at.strftime('%d %b %Y') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No enrollments yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

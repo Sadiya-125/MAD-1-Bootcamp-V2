@@ -17,3 +17,19 @@
   <progress class="progress" value="{{ percent }}" max="100" aria-label="Course progress">{{ percent }}%</progress>
   <p class="progress-label">{{ percent }}% complete</p>
 {% endmacro %}
+
+{% macro stat_card(label, value, note="") %}
+  <article class="card stat-card">
+    <h2>{{ label }}</h2>
+    <p class="stat">{{ value }}</p>
+    {% if note %}<p class="muted">{{ note }}</p>{% endif %}
+  </article>
+{% endmacro %}
+
+{% macro admin_tabs(active) %}
+  <nav class="tabs" aria-label="Admin sections">
+    <a href="{{ url_for('admin.dashboard') }}" {% if active == 'overview' %}aria-current="page"{% endif %}>Overview</a>
+    <a href="{{ url_for('admin.users') }}" {% if active == 'users' %}aria-current="page"{% endif %}>Users</a>
+    <a href="{{ url_for('admin.courses') }}" {% if active == 'courses' %}aria-current="page"{% endif %}>Courses</a>
+  </nav>
+{% endmacro %}
