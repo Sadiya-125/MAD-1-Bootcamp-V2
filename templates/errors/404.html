@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Page not found{% endblock %}
+
+{% block content %}
+<section class="card narrow error-page">
+  <p class="error-code">404</p>
+  <h1>We couldn't find that page</h1>
+  <p class="muted">The link may be broken, or the course may have been unpublished.</p>
+  <a class="btn btn-primary" href="{{ url_for('courses.course_list') }}">Browse courses</a>
+</section>
+{% endblock %}

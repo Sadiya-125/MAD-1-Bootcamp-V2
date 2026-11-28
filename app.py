@@ -46,7 +46,16 @@ def create_app(config_class=Config):
 
     @app.errorhandler(403)
     def forbidden(error):
-        return render_template("403.html"), 403
+        return render_template("errors/403.html"), 403
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template("errors/404.html"), 404
+
+    @app.errorhandler(500)
+    def server_error(error):
+        db.session.rollback()
+        return render_template("errors/500.html"), 500
 
     @app.cli.command("create-admin")
     @click.option("--username", prompt=True)

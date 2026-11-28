@@ -6,6 +6,7 @@ from helpers import (
     SIGNUP_ROLES,
     USERNAME_RE,
     is_safe_next,
+    is_web_url,
     login_required,
 )
 from models import User, db
@@ -122,3 +123,55 @@ def dashboard():
     if g.user.is_instructor:
         return redirect(url_for("instructor.dashboard"))
     return redirect(url_for("admin.dashboard"))
+
+
+@bp.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    user = g.user
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        bio = request.form.get("bio", "").strip()
+        avatar = request.form.get("avatar", "").strip()
+
+        errors = []
+        if not EMAIL_RE.match(email):
+            errors.append("Enter a valid email address.")
+        elif email != user.email and db.session.scalar(
+            db.select(User).where(User.email == email)
+        ):
+            errors.append("Another account already uses that email.")
+        if len(bio) > 1000:
+            errors.append("Bio must be 1000 characters or fewer.")
+        if avatar and not is_web_url(avatar):
+            errors.append("Avatar must be a link starting with http:// or https://.")
+
+        if errors:
+            for message in errors:
+                flash(message, "error")
+        else:
+            user.email, user.bio, user.avatar = email, bio, avatar or None
+            db.session.commit()
+            flash("Profile updated.", "success")
+            return redirect(url_for("auth.profile"))
+    return render_template("profile.html", user=user)
+
+
+@bp.route("/profile/password", methods=["POST"])
+@login_required
+def change_password():
+    current = request.form.get("current_password", "")
+    new = request.form.get("new_password", "")
+    confirm = request.form.get("confirm_password", "")
+
+    if not g.user.check_password(current):
+        flash("Your current password is incorrect.", "error")
+    elif len(new) < MIN_PASSWORD_LENGTH:
+        flash(f"New password must be at least {MIN_PASSWORD_LENGTH} characters.", "error")
+    elif new != confirm:
+        flash("New passwords do not match.", "error")
+    else:
+        g.user.set_password(new)
+        db.session.commit()
+        flash("Password changed.", "success")
+    return redirect(url_for("auth.profile"))

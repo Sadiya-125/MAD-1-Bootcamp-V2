@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="page-header profile-header">
+  {% if user.avatar %}
+    <img class="avatar" src="{{ user.avatar }}" alt="">
+  {% else %}
+    <span class="avatar avatar-initial" aria-hidden="true">{{ user.username[0]|upper }}</span>
+  {% endif %}
+  <div>
+    <h1>{{ user.username }}</h1>
+    <p class="muted">
+      <span class="badge badge-{{ user.role }}">{{ user.role|capitalize }}</span>
+      Member since {{ user.created_at.strftime('%B %Y') }}
+    </p>
+  </div>
+</div>
+
+<div class="profile-columns">
+  <section class="form-card">
+    <h2>Account</h2>
+    <form method="post" action="{{ url_for('auth.profile') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ user.email }}" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label for="avatar">Avatar image link (optional)</label>
+        <input id="avatar" name="avatar" type="url" value="{{ user.avatar or '' }}" placeholder="https://...">
+      </div>
+
+      <div class="field">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="4" maxlength="1000">{{ user.bio or '' }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save profile</button>
+    </form>
+  </section>
+
+  <section class="form-card">
+    <h2>Password</h2>
+    <form method="post" action="{{ url_for('auth.change_password') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field">
+        <label for="current_password">Current password</label>
+        <input id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+      </div>
+
+      <div class="field">
+        <label for="new_password">New password</label>
+        <input id="new_password" name="new_password" type="password" autocomplete="new-password" minlength="8" required>
+      </div>
+
+      <div class="field">
+        <label for="confirm_password">Confirm new password</label>
+        <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+      </div>
+
+      <button type="submit" class="btn btn-secondary">Change password</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

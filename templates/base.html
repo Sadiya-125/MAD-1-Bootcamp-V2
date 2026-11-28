@@ -23,7 +23,7 @@
             <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
             <li class="nav-user">
               <span class="badge badge-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
-              {{ current_user.username }}
+              <a href="{{ url_for('auth.profile') }}">{{ current_user.username }}</a>
             </li>
             <li>
               <form action="{{ url_for('auth.logout') }}" method="post" class="inline-form">
